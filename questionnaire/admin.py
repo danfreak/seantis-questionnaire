@@ -18,11 +18,16 @@ class ChoiceInline(admin.TabularInline):
     model = Choice
     extra = 5
 
+class QuestionInline(admin.TabularInline):
+    ordering = ['number']
+    model = Question
+
 class QuestionSetAdmin(admin.ModelAdmin):
     ordering = ['questionnaire', 'sortid', ]
     list_filter = ['questionnaire', ]
     list_display = ['questionnaire', 'heading', 'sortid', ]
     list_editable = ['sortid', ]
+    inlines = [QuestionInline]
 
 class QuestionAdmin(admin.ModelAdmin):
     ordering = ['questionset__questionnaire', 'questionset', 'number']
