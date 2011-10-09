@@ -45,7 +45,7 @@ def question_yesno(request, question):
         'template' : 'questionnaire/choice-yesnocomment.html',
     }
 
-@question_proc('open', 'open-textfield')
+@question_proc('date', 'open', 'open-textfield')
 def question_open(request, question):
     key = "question_%s" % question.number
     value = question.getcheckdict().get('default','')
@@ -56,7 +56,7 @@ def question_open(request, question):
         'value' : value,
     }
 
-@answer_proc('open', 'open-textfield', 'choice-yesno', 'choice-yesnocomment', 'choice-yesnodontknow')
+@answer_proc('date', 'open', 'open-textfield', 'choice-yesno', 'choice-yesnocomment', 'choice-yesnodontknow')
 def process_simple(question, ansdict):
     checkdict = question.getcheckdict()
     ans = ansdict['ANSWER'] or ''
@@ -79,6 +79,7 @@ def process_simple(question, ansdict):
         return "%s; %s" % (ans, ansdict['comment'])
     return ans
 
+add_type('date', 'date')
 add_type('open', 'Open Answer, single line [input]')
 add_type('open-textfield', 'Open Answer, multi-line [textarea]')
 add_type('choice-yesno', 'Yes/No Choice [radio]')
