@@ -426,7 +426,22 @@ def export_csv(request, qid): # questionnaire_id
 
     fd = tempfile.TemporaryFile()
     qid = int(qid)
-    columns = [x[0] for x in Question.objects.filter(questionset__questionnaire__id = qid).distinct('number').values_list('number')]
+    q = Question.objects.all()
+    
+    #get all questions
+    q_all = Question.objects.filter(questionset__questionnaire__id = qid)
+    
+    columns = []
+
+    for x in q_all:
+	    #if we have multiple choices
+        if x.type == 'choice-multiple-freeform':
+          #create extra columns
+          for n in range(1, x.choice_count + 1):
+            columns.append(x.number + '_' + str(n))
+        else:
+          columns.append(x.number)
+        
     columns.sort(numal_sort)
     columns.insert(0,u'subject')
     columns.insert(1,u'runid')
@@ -435,6 +450,7 @@ def export_csv(request, qid): # questionnaire_id
     for col in columns:
         coldict[col] = col
     writer.writerows([coldict,])
+    
     answers = Answer.objects.filter(question__questionset__questionnaire__id = qid).order_by('subject', 'runid', 'question__number',)
     if not answers:
         raise Exception, "EMPTY!" # FIXME
@@ -448,7 +464,21 @@ def export_csv(request, qid): # questionnaire_id
             runid = answer.runid
             subject = answer.subject
             d = { u'subject' : "%s/%s" % (subject.id, subject.state), u'runid' : runid }
-        d[answer.question.number] = answer.answer.encode('utf-8')
+        
+        #check if answer is of type multiple choice
+        if answer.question.type == 'choice-multiple-freeform':
+            a_split = answer.answer.replace(' ','').split(';')
+            for n in range(1, answer.question.choice_count + 1):
+                col_name = answer.question.number + '_' + str(n)
+                #create 0|1 values
+                if str(n) in a_split:
+                    answ = 1
+                else:
+                    answ = 0
+                d[col_name] = answ
+        else:
+            d[answer.question.number] = answer.answer.encode('utf-8')
+
     # and don't forget about the last one
     if d:
         writer.writerows([d,])
