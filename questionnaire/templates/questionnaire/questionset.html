@@ -5,12 +5,7 @@
 <script type="text/javascript" src="/static/js/jQl-min.js"></script>
 <!-- load jQuery and jQueryUI only if not already loaded -->
 <script type="text/javascript" src="/static/js/jq-loader.js"></script>
-<script type="text/javascript">
-jQuery(document).ready(function(){
-	//for questions of type date we enable jquery ui datepicker
-       jQuery('input.ui-date').datepicker();
-})
-</script>
+
 {% for x in jsinclude %}<script type="text/javascript" src="{{ x }}"></script>
 {% endfor %}
 {% for x in cssinclude %}<link rel="stylesheet" href="{{ x }}" type="text/css" />
@@ -98,4 +93,11 @@ for(key in qvalues) {
   valchanged(key, qvalues[key]);
 }
 </script>
+<!--script to instanciate the dataepicker for date questions-->
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	//for questions of type date we enable jquery ui datepicker
+    jQuery('input.ui-date').datepicker();
+})
+</script><!--end dataepicker for date questions-->
 {% endblock %}
