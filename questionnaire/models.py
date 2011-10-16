@@ -220,6 +220,7 @@ class Question(models.Model):
     extra = models.CharField(u"Extra information", max_length=128, blank=True, null=True, help_text=u"Extra information (use  on question type)")
     checks = models.CharField(u"Additional checks", max_length=64, blank=True,
         null=True, help_text=u"""Additional checks to be performed for this value (space separated).  You may also specify an entry as key=value or key="value with spaces".<br /><br />For text fields, <tt>required</tt> is a valid check.<br />For yes/no comment, "required", <tt>required-yes</tt>, and <tt>required-no</tt> are valid.<br />For Time period, you may supply <tt>units=hour,day,month,year</tt>.<br /><br />If this question is only valid if another question's answer is something specific, use <tt>requiredif="QuestionNumber,Value"</tt>.  Requiredif also takes boolean expressions using <tt>and</tt>, <tt>or</tt>, and <tt>not</tt>, as well as grouping with parenthesis. eg. <tt>requiredif="5,yes or (6,no and 1,yes)"</tt>, where the values in parenthesis are evaluated first.""")
+    choice_count = models.PositiveIntegerField(blank=True)
 
 
     def questionnaire(self):
@@ -290,6 +291,10 @@ class Question(models.Model):
         bnum, bstr = split_numal(b.number)
         cmpnum = cmp(anum, bnum)
         return cmpnum or cmp(astr, bstr)
+
+    def save(self):
+        self.choice_count = self.choice_set.count()
+        super(Question, self).save()
 
     class Meta:
         translate = ('text', 'extra')

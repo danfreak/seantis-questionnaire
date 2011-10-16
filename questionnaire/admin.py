@@ -32,6 +32,7 @@ class QuestionSetAdmin(admin.ModelAdmin):
 class QuestionAdmin(admin.ModelAdmin):
     ordering = ['questionset__questionnaire', 'questionset', 'number']
     inlines = [ChoiceInline]
+    exclude = ('choice_count',)
 
     def changelist_view(self, request, extra_context=None):
         "Hack to have Questionnaire list accessible for custom changelist template"
